@@ -115,7 +115,7 @@ def get_festivals():
 
     # JSON 형식의 데이터를 파이썬 리스트로 변환
     data = response.json()    
-
+    print(data)
     # 축제 목록 데이터 반환
     return data["response"]["body"]["items"]
 
