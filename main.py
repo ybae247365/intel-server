@@ -117,5 +117,9 @@ def get_festivals():
     data = response.json()    
 
     # 축제 목록 데이터 반환
-    return data
+    return data["response"]["body"]["items"]
+
+
+
+    #리턴
     
