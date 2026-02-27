@@ -5,8 +5,15 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi>=0.129.0",
+    "dotenv>=0.9.9",
+    "fastapi>=0.133.1",
     "httpx>=0.28.1",
-    "python-dotenv>=1.2.1",
+    "joblib>=1.5.3",
+    "onnxruntime>=1.24.2",
+    "pandas>=3.0.1",
+    "pillow>=12.1.1",
+    "python-multipart>=0.0.22",
+    "scikit-learn>=1.8.0",
+    "tensorflow-cpu>=2.20.0",
     "uvicorn>=0.41.0",
 ]

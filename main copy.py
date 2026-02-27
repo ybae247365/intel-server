@@ -1,29 +1,13 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import random 
 import httpx
 import os                         # 환경변수 접근을 위한 모듈
 from dotenv import load_dotenv    # .env 파일 로딩 라이브러리
-import joblib
-from schemas import SalesInput, SalesOutput  # pydantic 모델 import
-import pandas as pd
-from mobilenet.processing import preprocess_image
-from mobilenet.model import predict
-
 
 # .env 파일의 환경변수를 메모리에 로드
 # → 이후 os.getenv()로 값을 읽을 수 있게 됩니다.
 load_dotenv()   
-
-
-# -------------------
-# 모델 로드
-# -------------------
-model = joblib.load('ml/ad.pkl')
-ad_model = model['model']
-print('✅모델 로드 완료!')
-print(f"저장 당시 sklearn 버전: {model['sklearn_version']}")
-
 
 # ──────────────────────────────────────────────
 # 1) FastAPI 앱 인스턴스 생성
@@ -139,49 +123,3 @@ def get_festivals():
 
     #리턴
     
-# 광고비에 따른 판매량 예측
-@app.post("/sales_predict" , response_model=SalesOutput)
-def sales_predict(data: SalesInput): 
-    
-    # 모델에 입력할 데이터 준비    
-    features = [[data.tv, data.radio, data.newspaper ]]        
-    X = pd.DataFrame(features, columns=['TV', 'Radio', 'Newspaper'])
-    
-    # 예측 수행
-    prediction = ad_model.predict(X)[0]
-
-    # 결과 반환
-    return SalesOutput(predicted_sales=round(float(prediction), 2))
-
-# @app.on_event("startup")
-# async def startup_event():
-#     """서버 시작 시 모델 미리 로드"""
-#     load_model()
-
-
-
-# 모바일넷 엔드포인트 추가
-
-@app.post("/classify")
-async def classify_image(file: UploadFile = File(...)):
-    """
-    이미지를 받아서 분류 결과 반환
-    
-    - **file**: 분류할 이미지 파일 (jpg, png 등)
-    
-    Returns:
-        - predictions: 상위 5개 분류 결과
-    """
-    # 1. 이미지 읽기
-    image_bytes = await file.read()
-    
-    # 2. 전처리 (preprocessing.py)
-    processed_image = preprocess_image(image_bytes)
-    
-    # 3. 예측 (model.py)
-    results = predict(processed_image)
-    
-    return {
-        "success": True,
-        "predictions": results
-    }
